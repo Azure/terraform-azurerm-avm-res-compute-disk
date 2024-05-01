@@ -1,9 +1,3 @@
-resource "azurerm_resource_group" "this" {
-  location = var.location
-  name     = var.name # calling code must supply the name
-  tags     = var.tags
-}
-
 # required AVM resources interfaces
 resource "azurerm_management_lock" "this" {
   count = var.lock != null ? 1 : 0
@@ -16,7 +10,6 @@ resource "azurerm_management_lock" "this" {
 
 resource "azurerm_role_assignment" "this" {
   for_each = var.role_assignments
-
   principal_id                           = each.value.principal_id
   scope                                  = azurerm_managed_disk.this.id 
   condition                              = each.value.condition
@@ -27,10 +20,11 @@ resource "azurerm_role_assignment" "this" {
   skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
 }
 
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_managed_disk" "this" {
   create_option                     = var.create_option
-  location                          = azurerm_resource_group.this.location
+  location                          = var.location
   name                              = var.name
   resource_group_name               = var.resource_group_name
   storage_account_type              = var.storage_account_type

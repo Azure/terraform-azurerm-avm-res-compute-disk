@@ -43,6 +43,8 @@ resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
 }
 
+data "azurerm_client_config" "current" {}
+
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
@@ -59,4 +61,13 @@ module "test" {
   create_option = "Empty"
   storage_account_type = "Premium_LRS"
   disk_size_gb = 1024
+
+  // Example role assignment
+  role_assignments = {
+    role_assignment = {
+      principal_id               = data.azurerm_client_config.current.object_id
+      role_definition_id_or_name = "Reader"
+      description                = "Assign the Reader role to the deployment user on this disk resource scope."
+    }
+  }
 }
