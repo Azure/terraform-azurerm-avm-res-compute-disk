@@ -1,3 +1,13 @@
+output "location" {
+  description = "The deployment region."
+  value       = var.location
+}
+
+output "resource_group_name" {
+  description = "The name of the Resource Group."
+  value       = var.resource_group_name
+}
+
 # In your output you need to select the correct resource based on the value of var.private_endpoints_manage_dns_zone_group:
 output "private_endpoints" {
 value       = var.private_endpoints_manage_dns_zone_group ? azurerm_private_endpoint.this_managed_dns_zone_groups : azurerm_private_endpoint.this_unmanaged_dns_zone_groups
@@ -12,3 +22,4 @@ output "resource" {
   description = "This is the full output for the resource."
   value       = azurerm_managed_disk.this
 }
+
