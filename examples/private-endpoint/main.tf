@@ -20,6 +20,7 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
+  tags = local.tags
 }
 
 # A vnet is required for the private endpoint.
@@ -28,6 +29,7 @@ resource "azurerm_virtual_network" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_network.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  tags = local.tags
 }
 
 resource "azurerm_subnet" "this" {
@@ -40,12 +42,14 @@ resource "azurerm_subnet" "this" {
 resource "azurerm_private_dns_zone" "this" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.this.name
+  tags = local.tags
 }
 
 resource "azurerm_disk_access" "this" {
   location            = azurerm_resource_group.this.location
   name                = replace(azurerm_resource_group.this.name, "rg", "da")  // Naming module does not support disk access
   resource_group_name = azurerm_resource_group.this.name
+  tags = local.tags
 }
 
 # This is the module call
@@ -63,12 +67,7 @@ module "disk" {
   create_option = "Empty"
   storage_account_type = "Premium_LRS"
   disk_size_gb = 1024
-  /*private_endpoints = {
-    primary = {
-      private_dns_zone_resource_ids = [azurerm_private_dns_zone.this.id]
-      subnet_resource_id            = azurerm_subnet.this.id
-    }
-  }*/
+  tags = local.tags
   private_endpoints = {
     pe_endpoint = {
       name              = module.naming.private_endpoint.name_unique

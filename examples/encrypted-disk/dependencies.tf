@@ -2,6 +2,7 @@ resource "azurerm_disk_access" "this" {
   location            = azurerm_resource_group.this.location
   name                = replace(azurerm_resource_group.this.name, "rg", "da")  // Naming module does not support disk access
   resource_group_name = azurerm_resource_group.this.name
+  tags = local.tags
 }
 
 data "azurerm_client_config" "current" {}
@@ -10,7 +11,7 @@ resource "azurerm_user_assigned_identity" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.user_assigned_identity.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags                = {}
+  tags = local.tags
 }
 
 module "key_vault" {
@@ -21,6 +22,7 @@ module "key_vault" {
   resource_group_name    = azurerm_resource_group.this.name
   location               = azurerm_resource_group.this.location
   enabled_for_deployment = true
+  tags = local.tags
 
   network_acls = {
     default_action = "Allow"
@@ -53,14 +55,13 @@ module "key_vault" {
       key_vault_id = module.key_vault.resource.id
       name         = "cmkfordisk"
       key_size     = 2048
+      tags = local.tags
     }
   }
 
   wait_for_rbac_before_secret_operations = {
     create = "120s"
   }
-
-  tags = {}
 }
 
 resource "azurerm_disk_encryption_set" "this" {
@@ -72,4 +73,5 @@ resource "azurerm_disk_encryption_set" "this" {
     identity_ids = [azurerm_user_assigned_identity.this.id]
   }
   key_vault_key_id = module.key_vault.resource_keys["cmkfordisk"].id
+  tags = local.tags
 }

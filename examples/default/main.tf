@@ -22,14 +22,12 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
+  tags = local.tags
 }
 
 data "azurerm_client_config" "current" {}
 
 # This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
 module "disk" {
   source = "../../"
   # source             = "Azure/avm-res-compute-disk/azurerm"
@@ -42,6 +40,13 @@ module "disk" {
   create_option = "Empty"
   storage_account_type = "Premium_LRS"
   disk_size_gb = 1024
+  tags = local.tags
+
+  # Uncomment the code below to implement a VMSS Lock
+  #lock = {
+  #  name = "VMSSNoDelete"
+  #  kind = "CanNotDelete"
+  #}
 
   // Example role assignment
   role_assignments = {
