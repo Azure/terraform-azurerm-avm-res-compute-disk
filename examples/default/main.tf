@@ -22,7 +22,7 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
-  tags = local.tags
+  tags     = local.tags
 }
 
 data "azurerm_client_config" "current" {}
@@ -36,11 +36,11 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
-  create_option = "Empty"
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  create_option        = "Empty"
   storage_account_type = "PremiumV2_LRS"
-  disk_size_gb = 1024
-  tags = local.tags
+  disk_size_gb         = 1024
+  tags                 = local.tags
 
   # Uncomment the code below to implement a VMSS Lock
   #lock = {
