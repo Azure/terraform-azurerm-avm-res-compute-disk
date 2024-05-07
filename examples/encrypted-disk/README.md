@@ -1,14 +1,13 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This example deploys an encrypted disk.
 
 ```hcl
-## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/regions/azurerm"
-  version = "~> 0.3"
+  version = ">= 0.3.0"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -16,22 +15,18 @@ resource "random_integer" "region_index" {
   max = length(module.regions.regions) - 1
   min = 0
 }
-## End of section to provide a random Azure region for the resource group
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
-  tags     = local.tags
 }
-
-data "azurerm_client_config" "current" {}
 
 # This is the module call
 module "disk" {
@@ -42,26 +37,11 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  create_option        = "Empty"
-  storage_account_type = "PremiumV2_LRS"
-  disk_size_gb         = 1024
-  tags                 = local.tags
-
-  # Uncomment the code below to implement a VMSS Lock
-  #lock = {
-  #  name = "VMSSNoDelete"
-  #  kind = "CanNotDelete"
-  #}
-
-  // Example role assignment
-  role_assignments = {
-    role_assignment = {
-      principal_id               = data.azurerm_client_config.current.object_id
-      role_definition_id_or_name = "Reader"
-      description                = "Assign the Reader role to the deployment user on this disk resource scope."
-    }
-  }
+  enable_telemetry       = var.enable_telemetry # see variables.tf
+  create_option          = "Empty"
+  storage_account_type   = "PremiumV2_LRS"
+  disk_size_gb           = 1024
+  disk_encryption_set_id = azurerm_disk_encryption_set.this.id
 }
 ```
 
@@ -88,7 +68,10 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
+- [azurerm_disk_access.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/disk_access) (resource)
+- [azurerm_disk_encryption_set.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/disk_encryption_set) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_user_assigned_identity.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
@@ -104,7 +87,7 @@ The following input variables are optional (have default values):
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
+For more information see https://aka.ms/avm/telemetryinfo.  
 If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
@@ -137,17 +120,23 @@ Source: ../../
 
 Version:
 
+### <a name="module_key_vault"></a> [key\_vault](#module\_key\_vault)
+
+Source: Azure/avm-res-keyvault-vault/azurerm
+
+Version: 0.5.3
+
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: 0.3.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/regions/azurerm
 
-Version: ~> 0.3
+Version: >= 0.3.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
