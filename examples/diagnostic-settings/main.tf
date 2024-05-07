@@ -20,14 +20,14 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
-  tags = local.tags
+  tags     = local.tags
 }
 
 resource "azurerm_log_analytics_workspace" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.log_analytics_workspace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  tags = local.tags
+  tags                = local.tags
 }
 
 # This is the module call
@@ -39,11 +39,11 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
-  create_option = "Empty"
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  create_option        = "Empty"
   storage_account_type = "PremiumV2_LRS"
-  disk_size_gb = 1024
-  tags = local.tags
+  disk_size_gb         = 1024
+  tags                 = local.tags
   diagnostic_settings = {
     to_la = {
       name                  = "to-la"

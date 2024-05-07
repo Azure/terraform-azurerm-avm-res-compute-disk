@@ -1,33 +1,13 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This deploys the module with diagnostic settings enabled.
 
 ```hcl
-terraform {
-  required_version = "~> 1.5"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.74"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-
-## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/regions/azurerm"
-  version = "~> 0.3"
+  version = ">= 0.3.0"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -35,33 +15,47 @@ resource "random_integer" "region_index" {
   max = length(module.regions.regions) - 1
   min = 0
 }
-## End of section to provide a random Azure region for the resource group
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   location = module.regions.regions[random_integer.region_index.result].name
   name     = module.naming.resource_group.name_unique
+  tags     = local.tags
+}
+
+resource "azurerm_log_analytics_workspace" "this" {
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.log_analytics_workspace.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  tags                = local.tags
 }
 
 # This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
-module "test" {
+module "disk" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
+  # source             = "Azure/avm-res-compute-disk/azurerm"
   # ...
   location            = azurerm_resource_group.this.location
-  name                = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
+  name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  create_option        = "Empty"
+  storage_account_type = "PremiumV2_LRS"
+  disk_size_gb         = 1024
+  tags                 = local.tags
+  diagnostic_settings = {
+    to_la = {
+      name                  = "to-la"
+      workspace_resource_id = azurerm_log_analytics_workspace.this.id
+    }
+  }
 }
 ```
 
@@ -70,7 +64,7 @@ module "test" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
 
@@ -88,6 +82,7 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
+- [azurerm_log_analytics_workspace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 
@@ -103,7 +98,7 @@ The following input variables are optional (have default values):
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
+For more information see https://aka.ms/avm/telemetryinfo.  
 If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
@@ -112,29 +107,41 @@ Default: `true`
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_location"></a> [location](#output\_location)
+
+Description: The deployment region.
+
+### <a name="output_resource"></a> [resource](#output\_resource)
+
+Description: This is the full output for the resource.
+
+### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
+
+Description: The name of the Resource Group.
 
 ## Modules
 
 The following Modules are called:
 
+### <a name="module_disk"></a> [disk](#module\_disk)
+
+Source: ../../
+
+Version:
+
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: 0.3.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/regions/azurerm
 
-Version: ~> 0.3
-
-### <a name="module_test"></a> [test](#module\_test)
-
-Source: ../../
-
-Version:
+Version: >= 0.3.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

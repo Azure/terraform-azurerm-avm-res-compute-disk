@@ -31,9 +31,9 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
-  create_option = "Empty"
-  storage_account_type = "PremiumV2_LRS"
-  disk_size_gb = 1024
+  enable_telemetry       = var.enable_telemetry # see variables.tf
+  create_option          = "Empty"
+  storage_account_type   = "PremiumV2_LRS"
+  disk_size_gb           = 1024
   disk_encryption_set_id = azurerm_disk_encryption_set.this.id
 }
