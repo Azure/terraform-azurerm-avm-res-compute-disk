@@ -1,12 +1,27 @@
+variable "create_option" {
+  type        = string
+  description = "(Required) The method to use when creating the managed disk. Changing this forces a new resource to be created. Possible values include: * `Import`"
+  nullable    = false
+
+  validation {
+    condition     = contains(["Attach", "Copy", "CopyStart", "Empty", "FromImage", "Import", "ImportSecure", "Restore", "Upload", "UploadPreparedSecure"], var.create_option)
+    error_message = "The create option must be one of: 'Attach', 'Copy', CopyStart', 'Empty', 'FromImage', 'Import', 'ImportSecure', 'Restore', 'Upload', 'UploadPreparedSecure'."
+  }
+}
+
+variable "location" {
+  type        = string
+  description = "Azure region where the resource should be deployed."
+  nullable    = false
+}
+
 variable "name" {
   type        = string
   description = "The name of the this resource."
 
   validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
+    error_message = "The name must begin with a letter or number, end with a letter, number or underscore, and may contain only letters, numbers, underscores, periods, or hyphens, and must be less than 80 characters."
+    condition     = can(regex("^[A-Za-z0-9][A-Za-z0-9_.-]{0,78}[A-Za-z0-9_]$", var.name))
   }
 }
 
@@ -14,6 +29,17 @@ variable "name" {
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
+}
+
+variable "storage_account_type" {
+  type        = string
+  description = "(Required) The type of storage to use for the managed disk. Possible values are `Standard_LRS`, `StandardSSD_ZRS`, `Premium_LRS`, `PremiumV2_LRS`, `Premium_ZRS`, `StandardSSD_LRS` or `UltraSSD_LRS`."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^(Standard_LRS|StandardSSD_ZRS|Premium_LRS|PremiumV2_LRS|Premium_ZRS|StandardSSD_LRS|UltraSSD_LRS)$", var.storage_account_type))
+    error_message = "The storage account type must be one of: 'Standard_LRS', 'StandardSSD_ZRS', 'Premium_LRS', 'PremiumV2_LRS', 'Premium_ZRS', 'StandardSSD_LRS', 'UltraSSD_LRS'."
+  }
 }
 
 # required AVM interfaces
@@ -84,6 +110,54 @@ DESCRIPTION
   }
 }
 
+variable "disk_access_id" {
+  type        = string
+  default     = null
+  description = "(Optional) The ID of the disk access resource for using private endpoints on disks."
+}
+
+variable "disk_encryption_set_id" {
+  type        = string
+  default     = null
+  description = "(Optional) The ID of a Disk Encryption Set which should be used to encrypt this Managed Disk. Conflicts with `secure_vm_disk_encryption_set_id`."
+}
+
+variable "disk_iops_read_only" {
+  type        = number
+  default     = null
+  description = "(Optional) The number of IOPS allowed across all VMs mounting the shared disk as read-only; only settable for UltraSSD disks and PremiumV2 disks with shared disk enabled. One operation can transfer between 4k and 256k bytes."
+}
+
+variable "disk_iops_read_write" {
+  type        = number
+  default     = null
+  description = "(Optional) The number of IOPS allowed for this disk; only settable for UltraSSD disks and PremiumV2 disks. One operation can transfer between 4k and 256k bytes."
+}
+
+variable "disk_mbps_read_only" {
+  type        = number
+  default     = null
+  description = "(Optional) The bandwidth allowed across all VMs mounting the shared disk as read-only; only settable for UltraSSD disks and PremiumV2 disks with shared disk enabled. MBps means millions of bytes per second."
+}
+
+variable "disk_mbps_read_write" {
+  type        = number
+  default     = null
+  description = "(Optional) The bandwidth allowed for this disk; only settable for UltraSSD disks and PremiumV2 disks. MBps means millions of bytes per second."
+}
+
+variable "disk_size_gb" {
+  type        = number
+  default     = null
+  description = "(Optional) (Optional, Required for a new managed disk) Specifies the size of the managed disk to create in gigabytes. If `create_option` is `Copy` or `FromImage`, then the value must be equal to or greater than the source's size. The size can only be increased."
+}
+
+variable "edge_zone" {
+  type        = string
+  default     = null
+  description = "(Optional) Specifies the Edge Zone within the Azure Region where this Managed Disk should exist. Changing this forces a new Managed Disk to be created."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -94,10 +168,50 @@ If it is set to false, then no telemetry will be collected.
 DESCRIPTION
 }
 
-variable "location" {
+variable "encryption_settings" {
+  type = object({
+    enabled = optional(bool)
+    disk_encryption_key = optional(object({
+      secret_url      = string
+      source_vault_id = string
+    }))
+    key_encryption_key = optional(object({
+      key_url         = string
+      source_vault_id = string
+    }))
+  })
+  default     = null
+  description = <<-EOT
+ - `enabled` - 
+
+ ---
+ `disk_encryption_key` block supports the following:
+ - `secret_url` - (Required) The URL to the Key Vault Secret used as the Disk Encryption Key. This can be found as `id` on the `azurerm_key_vault_secret` resource.
+ - `source_vault_id` - (Required) The ID of the source Key Vault. This can be found as `id` on the `azurerm_key_vault` resource.
+
+ ---
+ `key_encryption_key` block supports the following:
+ - `key_url` - (Required) The URL to the Key Vault Key used as the Key Encryption Key. This can be found as `id` on the `azurerm_key_vault_key` resource.
+ - `source_vault_id` - (Required) The ID of the source Key Vault. This can be found as `id` on the `azurerm_key_vault` resource.
+EOT
+}
+
+variable "gallery_image_reference_id" {
   type        = string
-  nullable    = false
-  description = "Azure region where the resource should be deployed."
+  default     = null
+  description = "(Optional) ID of a Gallery Image Version to copy when `create_option` is `FromImage`. This field cannot be specified if image_reference_id is specified. Changing this forces a new resource to be created."
+}
+
+variable "hyper_v_generation" {
+  type        = string
+  default     = null
+  description = "(Optional) The HyperV Generation of the Disk when the source of an `Import` or `Copy` operation targets a source that contains an operating system. Possible values are `V1` and `V2`. For `ImportSecure` it must be set to `V2`. Changing this forces a new resource to be created."
+}
+
+variable "image_reference_id" {
+  type        = string
+  default     = null
+  description = "(Optional) ID of an existing platform/marketplace disk image to copy when `create_option` is `FromImage`. This field cannot be specified if gallery_image_reference_id is specified. Changing this forces a new resource to be created."
 }
 
 variable "lock" {
@@ -119,20 +233,46 @@ DESCRIPTION
   }
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "managed_identities" {
-  type = object({
-    system_assigned            = optional(bool, false)
-    user_assigned_resource_ids = optional(set(string), [])
-  })
-  default     = {}
-  description = <<DESCRIPTION
-Controls the Managed Identity configuration on this resource. The following properties can be specified:
+variable "logical_sector_size" {
+  type        = number
+  default     = null
+  description = "(Optional) Logical Sector Size. Possible values are: `512` and `4096`. Defaults to `4096`. Changing this forces a new resource to be created."
+}
 
-- `system_assigned` - (Optional) Specifies if the System Assigned Managed Identity should be enabled.
-- `user_assigned_resource_ids` - (Optional) Specifies a list of User Assigned Managed Identity resource IDs to be assigned to this resource.
-DESCRIPTION
-  nullable    = false
+variable "max_shares" {
+  type        = number
+  default     = null
+  description = "(Optional) The maximum number of VMs that can attach to the disk at the same time. Value greater than one indicates a disk that can be mounted on multiple VMs at the same time."
+}
+
+variable "network_access_policy" {
+  type        = string
+  default     = null
+  description = "(Optional) Policy for accessing the disk via network. Allowed values are `AllowAll`, `AllowPrivate`, and `DenyAll`."
+}
+
+variable "on_demand_bursting_enabled" {
+  type        = bool
+  default     = null
+  description = "(Optional) Specifies if On-Demand Bursting is enabled for the Managed Disk."
+}
+
+variable "optimized_frequent_attach_enabled" {
+  type        = bool
+  default     = null
+  description = "(Optional) Specifies whether this Managed Disk should be optimized for frequent disk attachments (where a disk is attached/detached more than 5 times in a day). Defaults to `false`."
+}
+
+variable "os_type" {
+  type        = string
+  default     = null
+  description = "(Optional) Specify a value when the source of an `Import`, `ImportSecure` or `Copy` operation targets a source that contains an operating system. Valid values are `Linux` or `Windows`."
+}
+
+variable "performance_plus_enabled" {
+  type        = bool
+  default     = null
+  description = "(Optional) Specifies whether Performance Plus is enabled for this Managed Disk. Defaults to `false`. Changing this forces a new resource to be created."
 }
 
 variable "private_endpoints" {
@@ -195,8 +335,14 @@ DESCRIPTION
 variable "private_endpoints_manage_dns_zone_group" {
   type        = bool
   default     = true
-  nullable    = false
   description = "Whether to manage private DNS zone groups with this module. If set to false, you must manage private DNS zone groups externally, e.g. using Azure Policy."
+  nullable    = false
+}
+
+variable "public_network_access_enabled" {
+  type        = bool
+  default     = null
+  description = "(Optional) Whether it is allowed to access the disk via public network. Defaults to `true`."
 }
 
 variable "role_assignments" {
@@ -225,10 +371,63 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "secure_vm_disk_encryption_set_id" {
+  type        = string
+  default     = null
+  description = "(Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with `disk_encryption_set_id`. Changing this forces a new resource to be created."
+}
+
+variable "security_type" {
+  type        = string
+  default     = null
+  description = "(Optional) Security Type of the Managed Disk when it is used for a Confidential VM. Possible values are `ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey`, `ConfidentialVM_DiskEncryptedWithPlatformKey` and `ConfidentialVM_DiskEncryptedWithCustomerKey`. Changing this forces a new resource to be created."
+}
+
+variable "source_resource_id" {
+  type        = string
+  default     = null
+  description = "(Optional) The ID of an existing Managed Disk or Snapshot to copy when `create_option` is `Copy` or the recovery point to restore when `create_option` is `Restore`. Changing this forces a new resource to be created."
+}
+
+variable "source_uri" {
+  type        = string
+  default     = null
+  description = "(Optional) URI to a valid VHD file to be used when `create_option` is `Import` or `ImportSecure`. Changing this forces a new resource to be created."
+}
+
+variable "storage_account_id" {
+  type        = string
+  default     = null
+  description = "(Optional) The ID of the Storage Account where the `source_uri` is located. Required when `create_option` is set to `Import` or `ImportSecure`. Changing this forces a new resource to be created."
+}
 
 # tflint-ignore: terraform_unused_declarations
 variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "tier" {
+  type        = string
+  default     = null
+  description = "(Optional) The disk performance tier to use. Possible values are documented [here](https://docs.microsoft.com/azure/virtual-machines/disks-change-performance). This feature is currently supported only for premium SSDs."
+}
+
+variable "trusted_launch_enabled" {
+  type        = bool
+  default     = null
+  description = "(Optional) Specifies if Trusted Launch is enabled for the Managed Disk. Changing this forces a new resource to be created."
+}
+
+variable "upload_size_bytes" {
+  type        = number
+  default     = null
+  description = "(Optional) Specifies the size of the managed disk to create in bytes. Required when `create_option` is `Upload`. The value must be equal to the source disk to be copied in bytes. Source disk size could be calculated with `ls -l` or `wc -c`. More information can be found at [Copy a managed disk](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-upload-vhd-to-managed-disk-cli#copy-a-managed-disk). Changing this forces a new resource to be created."
+}
+
+variable "zone" {
+  type        = string
+  default     = null
+  description = "(Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created."
 }
