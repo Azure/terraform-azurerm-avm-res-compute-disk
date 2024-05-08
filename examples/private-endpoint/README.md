@@ -53,7 +53,7 @@ resource "azurerm_private_dns_zone" "this" {
 
 resource "azurerm_disk_access" "this" {
   location            = azurerm_resource_group.this.location
-  name                = replace(azurerm_resource_group.this.name, "rg", "da") // Naming module does not support disk access
+  name                = replace(azurerm_resource_group.this.name, "rg", "da") # Naming module does not support disk access
   resource_group_name = azurerm_resource_group.this.name
   tags                = local.tags
 }

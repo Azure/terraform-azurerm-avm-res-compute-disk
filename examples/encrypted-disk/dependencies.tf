@@ -1,6 +1,6 @@
 resource "azurerm_disk_access" "this" {
   location            = azurerm_resource_group.this.location
-  name                = replace(azurerm_resource_group.this.name, "rg", "da") // Naming module does not support disk access
+  name                = replace(azurerm_resource_group.this.name, "rg", "da") # Naming module does not support disk access
   resource_group_name = azurerm_resource_group.this.name
   tags                = local.tags
 }
@@ -29,7 +29,7 @@ module "key_vault" {
     bypass         = "AzureServices"
   }
 
-  // Role recommended in this article: https://learn.microsoft.com/en-us/azure/virtual-machines/disk-encryption#full-control-of-your-keys
+  # Role recommended in this article: https://learn.microsoft.com/en-us/azure/virtual-machines/disk-encryption#full-control-of-your-keys
   role_assignments = {
     key_vault_administrator = {
       role_definition_id_or_name = "Key Vault Administrator"
