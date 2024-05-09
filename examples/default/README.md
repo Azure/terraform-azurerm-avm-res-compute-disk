@@ -55,6 +55,7 @@ module "disk" {
   #}
 
   # Example role assignment
+
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
