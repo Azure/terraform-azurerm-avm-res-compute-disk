@@ -21,8 +21,6 @@ resource "azurerm_role_assignment" "this" {
   skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
 }
 
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_managed_disk" "this" {
   create_option                     = var.create_option
   location                          = var.location

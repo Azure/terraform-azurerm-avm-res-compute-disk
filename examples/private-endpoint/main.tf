@@ -47,7 +47,7 @@ resource "azurerm_private_dns_zone" "this" {
 
 resource "azurerm_disk_access" "this" {
   location            = azurerm_resource_group.this.location
-  name                = replace(azurerm_resource_group.this.name, "rg", "da") // Naming module does not support disk access
+  name                = replace(azurerm_resource_group.this.name, "rg", "da") # Naming module does not support disk access
   resource_group_name = azurerm_resource_group.this.name
   tags                = local.tags
 }
@@ -65,7 +65,7 @@ module "disk" {
   network_access_policy = "AllowPrivate"
   disk_access_id        = azurerm_disk_access.this.id
   create_option         = "Empty"
-  storage_account_type  = "PremiumV2_LRS"
+  storage_account_type  = "Premium_LRS"
   disk_size_gb          = 1024
   tags                  = local.tags
   private_endpoints = {

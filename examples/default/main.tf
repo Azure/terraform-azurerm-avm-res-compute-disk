@@ -38,7 +38,7 @@ module "disk" {
 
   enable_telemetry     = var.enable_telemetry # see variables.tf
   create_option        = "Empty"
-  storage_account_type = "PremiumV2_LRS"
+  storage_account_type = "Premium_LRS"
   disk_size_gb         = 1024
   tags                 = local.tags
 
@@ -48,7 +48,7 @@ module "disk" {
   #  kind = "CanNotDelete"
   #}
 
-  // Example role assignment
+  # Example role assignment
   role_assignments = {
     role_assignment = {
       principal_id               = data.azurerm_client_config.current.object_id
