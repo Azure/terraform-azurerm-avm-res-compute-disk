@@ -65,7 +65,7 @@ module "disk" {
   network_access_policy = "AllowPrivate"
   disk_access_id        = azurerm_disk_access.this.id
   create_option         = "Empty"
-  storage_account_type  = "PremiumV2_LRS"
+  storage_account_type  = "Premium_LRS"
   disk_size_gb          = 1024
   tags                  = local.tags
   private_endpoints = {

@@ -33,7 +33,7 @@ module "disk" {
 
   enable_telemetry       = var.enable_telemetry # see variables.tf
   create_option          = "Empty"
-  storage_account_type   = "PremiumV2_LRS"
+  storage_account_type   = "Premium_LRS"
   disk_size_gb           = 1024
   disk_encryption_set_id = azurerm_disk_encryption_set.this.id
 }
