@@ -338,6 +338,7 @@ map(object({
       condition                              = optional(string, null)
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
     })), {})
     lock = optional(object({
       kind = string
@@ -401,6 +402,7 @@ map(object({
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
 ```
 
@@ -505,6 +507,10 @@ Description: This is the full output for the resource.
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 
 Description: The name of the Resource Group.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: This is the full output for the resource.
 
 ## Modules
 

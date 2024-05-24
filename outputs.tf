@@ -22,3 +22,8 @@ output "resource_group_name" {
   description = "The name of the Resource Group."
   value       = var.resource_group_name
 }
+
+output "resource_id" {
+  description = "This is the full output for the resource."
+  value       = azurerm_managed_disk.this.id
+}
