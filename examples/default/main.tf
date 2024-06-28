@@ -10,7 +10,12 @@ resource "random_integer" "region_index" {
   max = length(module.regions.regions) - 1
   min = 0
 }
-## End of section to provide a random Azure region for the resource group
+
+# This allows us to randomize the zone for the disk group.
+resource "random_integer" "zone" {
+  max = 3
+  min = 1
+}
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
@@ -35,6 +40,7 @@ module "disk" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  zone                = random_integer.zone.result
 
   enable_telemetry     = var.enable_telemetry # see variables.tf
   create_option        = "Empty"

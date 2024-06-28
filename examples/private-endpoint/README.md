@@ -16,6 +16,12 @@ resource "random_integer" "region_index" {
   min = 0
 }
 
+# This allows us to randomize the zone for the disk group.
+resource "random_integer" "zone" {
+  max = 3
+  min = 1
+}
+
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
@@ -74,6 +80,7 @@ module "disk" {
   storage_account_type  = "Premium_LRS"
   disk_size_gb          = 1024
   tags                  = local.tags
+  zone                  = random_integer.zone.result
   private_endpoints = {
     pe_endpoint = {
       name                            = module.naming.private_endpoint.name_unique
@@ -114,6 +121,7 @@ The following resources are used by this module:
 - [azurerm_subnet.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
+- [random_integer.zone](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs

@@ -16,6 +16,12 @@ resource "random_integer" "region_index" {
   min = 0
 }
 
+# This allows us to randomize the zone for the disk group.
+resource "random_integer" "zone" {
+  max = 3
+  min = 1
+}
+
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
@@ -36,6 +42,7 @@ module "disk" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  zone                = random_integer.zone.result
 
   enable_telemetry       = var.enable_telemetry # see variables.tf
   create_option          = "Empty"
@@ -73,6 +80,7 @@ The following resources are used by this module:
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_user_assigned_identity.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
+- [random_integer.zone](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
 <!-- markdownlint-disable MD013 -->

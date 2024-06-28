@@ -73,6 +73,12 @@ Description: (Required) The type of storage to use for the managed disk. Possibl
 
 Type: `string`
 
+### <a name="input_zone"></a> [zone](#input\_zone)
+
+Description: (Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created.
+
+Type: `string`
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):
@@ -477,14 +483,6 @@ Default: `null`
 Description: (Optional) Specifies the size of the managed disk to create in bytes. Required when `create_option` is `Upload`. The value must be equal to the source disk to be copied in bytes. Source disk size could be calculated with `ls -l` or `wc -c`. More information can be found at [Copy a managed disk](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-upload-vhd-to-managed-disk-cli#copy-a-managed-disk). Changing this forces a new resource to be created.
 
 Type: `number`
-
-Default: `null`
-
-### <a name="input_zone"></a> [zone](#input\_zone)
-
-Description: (Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created.
-
-Type: `string`
 
 Default: `null`
 

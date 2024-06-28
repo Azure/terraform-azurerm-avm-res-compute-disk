@@ -10,6 +10,12 @@ resource "random_integer" "region_index" {
   min = 0
 }
 
+# This allows us to randomize the zone for the disk group.
+resource "random_integer" "zone" {
+  max = 3
+  min = 1
+}
+
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
@@ -68,6 +74,7 @@ module "disk" {
   storage_account_type  = "Premium_LRS"
   disk_size_gb          = 1024
   tags                  = local.tags
+  zone                  = random_integer.zone.result
   private_endpoints = {
     pe_endpoint = {
       name                            = module.naming.private_endpoint.name_unique
