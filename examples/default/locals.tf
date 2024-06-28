@@ -1,5 +1,5 @@
 locals {
   tags = {
-    scenario = "Disk Default AVM Sample"
+    scenario = "Disk Private Endpoint AVM Sample"
   }
 }

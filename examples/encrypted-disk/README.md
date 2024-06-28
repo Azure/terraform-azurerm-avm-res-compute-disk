@@ -49,6 +49,8 @@ module "disk" {
   storage_account_type   = "Premium_LRS"
   disk_size_gb           = 1024
   disk_encryption_set_id = azurerm_disk_encryption_set.this.id
+
+  network_access_policy = "AllowAll"
 }
 ```
 
@@ -57,19 +59,19 @@ module "disk" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.110)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.2)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.74)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.110)
 
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
+- <a name="provider_random"></a> [random](#provider\_random) (~> 3.6.2)
 
 ## Resources
 

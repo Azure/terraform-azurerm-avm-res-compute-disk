@@ -11,19 +11,19 @@
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.71)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.110)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.2)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.71)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.110)
 
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
+- <a name="provider_random"></a> [random](#provider\_random) (~> 3.6.2)
 
 ## Resources
 
@@ -273,11 +273,11 @@ Default: `null`
 
 ### <a name="input_network_access_policy"></a> [network\_access\_policy](#input\_network\_access\_policy)
 
-Description: (Optional) Policy for accessing the disk via network. Allowed values are `AllowAll`, `AllowPrivate`, and `DenyAll`.
+Description: (Optional) Policy for accessing the disk via network. Allowed values are `AllowAll`, `AllowPrivate`, and `DenyAll`.  Defaults to `AllowPrivate`
 
 Type: `string`
 
-Default: `null`
+Default: `"AllowPrivate"`
 
 ### <a name="input_on_demand_bursting_enabled"></a> [on\_demand\_bursting\_enabled](#input\_on\_demand\_bursting\_enabled)
 
@@ -378,11 +378,11 @@ Default: `true`
 
 ### <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled)
 
-Description: (Optional) Whether it is allowed to access the disk via public network. Defaults to `true`.
+Description: (Optional) Whether it is allowed to access the disk via public network. Defaults to `false`.
 
 Type: `bool`
 
-Default: `null`
+Default: `false`
 
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
