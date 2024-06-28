@@ -1,14 +1,13 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This deploys a disk with a private endpoint.
 
 ```hcl
-## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/regions/azurerm"
-  version = "~> 0.3"
+  version = ">= 0.3.0"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -16,12 +15,17 @@ resource "random_integer" "region_index" {
   max = length(module.regions.regions) - 1
   min = 0
 }
-## End of section to provide a random Azure region for the resource group
+
+# This allows us to randomize the zone for the disk group.
+resource "random_integer" "zone" {
+  max = 3
+  min = 1
+}
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
@@ -31,7 +35,34 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-data "azurerm_client_config" "current" {}
+# A vnet is required for the private endpoint.
+resource "azurerm_virtual_network" "this" {
+  address_space       = ["192.168.0.0/24"]
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.virtual_network.name_unique
+  resource_group_name = azurerm_resource_group.this.name
+  tags                = local.tags
+}
+
+resource "azurerm_subnet" "this" {
+  address_prefixes     = ["192.168.0.0/24"]
+  name                 = module.naming.subnet.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.this.name
+}
+
+resource "azurerm_private_dns_zone" "this" {
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = azurerm_resource_group.this.name
+  tags                = local.tags
+}
+
+resource "azurerm_disk_access" "this" {
+  location            = azurerm_resource_group.this.location
+  name                = replace(azurerm_resource_group.this.name, "rg", "da") # Naming module does not support disk access
+  resource_group_name = azurerm_resource_group.this.name
+  tags                = local.tags
+}
 
 # This is the module call
 module "disk" {
@@ -42,24 +73,20 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry     = var.enable_telemetry # see variables.tf
-  create_option        = "Empty"
-  storage_account_type = "Premium_LRS"
-  disk_size_gb         = 1024
-  tags                 = local.tags
-
-  # Uncomment the code below to implement a VMSS Lock
-  #lock = {
-  #  name = "VMSSNoDelete"
-  #  kind = "CanNotDelete"
-  #}
-
-  # Example role assignment
-  role_assignments = {
-    role_assignment = {
-      principal_id               = data.azurerm_client_config.current.object_id
-      role_definition_id_or_name = "Reader"
-      description                = "Assign the Reader role to the deployment user on this disk resource scope."
+  enable_telemetry      = var.enable_telemetry # see variables.tf
+  network_access_policy = "AllowPrivate"
+  disk_access_id        = azurerm_disk_access.this.id
+  create_option         = "Empty"
+  storage_account_type  = "Premium_LRS"
+  disk_size_gb          = 1024
+  tags                  = local.tags
+  zone                  = random_integer.zone.result
+  private_endpoints = {
+    pe_endpoint = {
+      name                            = module.naming.private_endpoint.name_unique
+      private_dns_zone_resource_ids   = [azurerm_private_dns_zone.this.id]
+      private_service_connection_name = "pse-${module.naming.private_endpoint.name_unique}"
+      subnet_resource_id              = azurerm_subnet.this.id
     }
   }
 }
@@ -72,25 +99,29 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.110)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.2)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.74)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.110)
 
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
+- <a name="provider_random"></a> [random](#provider\_random) (~> 3.6.2)
 
 ## Resources
 
 The following resources are used by this module:
 
+- [azurerm_disk_access.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/disk_access) (resource)
+- [azurerm_private_dns_zone.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_subnet.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
+- [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
-- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [random_integer.zone](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -104,7 +135,7 @@ The following input variables are optional (have default values):
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
+For more information see https://aka.ms/avm/telemetryinfo.  
 If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
@@ -141,13 +172,13 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: 0.3.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/regions/azurerm
 
-Version: ~> 0.3
+Version: >= 0.3.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

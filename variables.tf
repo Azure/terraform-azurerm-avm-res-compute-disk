@@ -42,6 +42,11 @@ variable "storage_account_type" {
   }
 }
 
+variable "zone" {
+  type        = string
+  description = "(Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created."
+}
+
 # required AVM interfaces
 # remove only if not supported by the resource
 # tflint-ignore: terraform_unused_declarations
@@ -202,8 +207,8 @@ variable "max_shares" {
 
 variable "network_access_policy" {
   type        = string
-  default     = null
-  description = "(Optional) Policy for accessing the disk via network. Allowed values are `AllowAll`, `AllowPrivate`, and `DenyAll`."
+  default     = "AllowPrivate"
+  description = "(Optional) Policy for accessing the disk via network. Allowed values are `AllowAll`, `AllowPrivate`, and `DenyAll`.  Defaults to `AllowPrivate`"
 }
 
 variable "on_demand_bursting_enabled" {
@@ -297,8 +302,8 @@ variable "private_endpoints_manage_dns_zone_group" {
 
 variable "public_network_access_enabled" {
   type        = bool
-  default     = null
-  description = "(Optional) Whether it is allowed to access the disk via public network. Defaults to `true`."
+  default     = false
+  description = "(Optional) Whether it is allowed to access the disk via public network. Defaults to `false`."
 }
 
 variable "role_assignments" {
@@ -381,10 +386,4 @@ variable "upload_size_bytes" {
   type        = number
   default     = null
   description = "(Optional) Specifies the size of the managed disk to create in bytes. Required when `create_option` is `Upload`. The value must be equal to the source disk to be copied in bytes. Source disk size could be calculated with `ls -l` or `wc -c`. More information can be found at [Copy a managed disk](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-upload-vhd-to-managed-disk-cli#copy-a-managed-disk). Changing this forces a new resource to be created."
-}
-
-variable "zone" {
-  type        = string
-  default     = null
-  description = "(Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created."
 }
