@@ -65,10 +65,10 @@ module "key_vault" {
 }
 
 resource "azurerm_disk_encryption_set" "this" {
-  key_vault_key_id    = module.key_vault.resource_keys["cmkfordisk"].id
   location            = azurerm_resource_group.this.location
   name                = module.naming.disk_encryption_set.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  key_vault_key_id    = module.key_vault.resource_keys["cmkfordisk"].id
   tags                = local.tags
 
   identity {
