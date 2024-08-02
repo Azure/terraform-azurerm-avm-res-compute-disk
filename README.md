@@ -71,7 +71,7 @@ Type: `string`
 
 ### <a name="input_zone"></a> [zone](#input\_zone)
 
-Description: (Required) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created.
+Description: (Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created.  Note that the availability zone number here are the logical availability zone in your Azure subscription. Different subscriptions might have a different mapping of the physical zone and logical zone. To understand more, please refer to [Physical and logical availability zones](https://learn.microsoft.com/en-us/azure/reliability/availability-zones-overview?tabs=azure-cli#physical-and-logical-availability-zones) and [Distribute VMs and disks across availability zones](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-high-availability#distribute-vms-and-disks-across-availability-zones)
 
 Type: `string`
 
