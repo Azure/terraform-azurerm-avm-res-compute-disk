@@ -44,7 +44,7 @@ variable "storage_account_type" {
 
 variable "zone" {
   type        = string
-  description = "(Optional) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created."
+  description = "(Required) Specifies the Availability Zone in which this Managed Disk should be located. Changing this property forces a new resource to be created."
 }
 
 # required AVM interfaces
