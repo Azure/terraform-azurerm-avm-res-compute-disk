@@ -59,11 +59,13 @@ resource "azurerm_managed_disk" "this" {
 
   dynamic "encryption_settings" {
     for_each = var.encryption_settings == null ? [] : [var.encryption_settings]
+
     content {
       enabled = encryption_settings.value.enabled
 
       dynamic "disk_encryption_key" {
         for_each = encryption_settings.value.disk_encryption_key == null ? [] : [encryption_settings.value.disk_encryption_key]
+
         content {
           secret_url      = disk_encryption_key.value.secret_url
           source_vault_id = disk_encryption_key.value.source_vault_id
@@ -71,6 +73,7 @@ resource "azurerm_managed_disk" "this" {
       }
       dynamic "key_encryption_key" {
         for_each = encryption_settings.value.key_encryption_key == null ? [] : [encryption_settings.value.key_encryption_key]
+
         content {
           key_url         = key_encryption_key.value.key_url
           source_vault_id = key_encryption_key.value.source_vault_id
