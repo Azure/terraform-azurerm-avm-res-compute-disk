@@ -13,11 +13,11 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.110)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3.2)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.2)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.3)
 
 ## Resources
 
@@ -195,7 +195,6 @@ Type:
 
 ```hcl
 object({
-    enabled = optional(bool)
     disk_encryption_key = optional(object({
       secret_url      = string
       source_vault_id = string

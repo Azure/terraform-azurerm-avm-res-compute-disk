@@ -130,7 +130,6 @@ DESCRIPTION
 
 variable "encryption_settings" {
   type = object({
-    enabled = optional(bool)
     disk_encryption_key = optional(object({
       secret_url      = string
       source_vault_id = string
