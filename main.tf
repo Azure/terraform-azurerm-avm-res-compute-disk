@@ -57,7 +57,7 @@ resource "azurerm_managed_disk" "this" {
   upload_size_bytes                 = var.upload_size_bytes
   zone                              = var.zone
 
-  dynamic "encryption_settings" {
+  dynamic "encryption_settings" { 
     for_each = var.encryption_settings == null ? [] : [var.encryption_settings]
 
     content {
