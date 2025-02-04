@@ -67,7 +67,7 @@ module "disk" {
   name                = module.naming.managed_disk.name_unique
   resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry      = var.enable_telemetry # see variables.tf
+  enable_telemetry      = var.enable_telemetry 
   network_access_policy = "AllowPrivate"
   disk_access_id        = azurerm_disk_access.this.id
   create_option         = "Empty"
