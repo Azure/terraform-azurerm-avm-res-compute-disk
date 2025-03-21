@@ -61,8 +61,6 @@ resource "azurerm_managed_disk" "this" {
     for_each = var.encryption_settings == null ? [] : [var.encryption_settings]
 
     content {
-      enabled = encryption_settings.value.enabled
-
       dynamic "disk_encryption_key" {
         for_each = encryption_settings.value.disk_encryption_key == null ? [] : [encryption_settings.value.disk_encryption_key]
 
