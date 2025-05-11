@@ -67,20 +67,19 @@ resource "azurerm_disk_access" "this" {
 # This is the module call
 module "disk" {
   source = "../../"
+
+  create_option = "Empty"
   # source             = "Azure/avm-res-compute-disk/azurerm"
   # ...
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.managed_disk.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-
+  location              = azurerm_resource_group.this.location
+  name                  = module.naming.managed_disk.name_unique
+  resource_group_name   = azurerm_resource_group.this.name
+  storage_account_type  = "Premium_LRS"
+  zone                  = random_integer.zone.result
+  disk_access_id        = azurerm_disk_access.this.id
+  disk_size_gb          = 1024
   enable_telemetry      = var.enable_telemetry # see variables.tf
   network_access_policy = "AllowPrivate"
-  disk_access_id        = azurerm_disk_access.this.id
-  create_option         = "Empty"
-  storage_account_type  = "Premium_LRS"
-  disk_size_gb          = 1024
-  tags                  = local.tags
-  zone                  = random_integer.zone.result
   private_endpoints = {
     pe_endpoint = {
       name                            = module.naming.private_endpoint.name_unique
@@ -89,6 +88,7 @@ module "disk" {
       subnet_resource_id              = azurerm_subnet.this.id
     }
   }
+  tags = local.tags
 }
 ```
 
