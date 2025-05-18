@@ -31,18 +31,17 @@ resource "azurerm_resource_group" "this" {
 # This is the module call
 module "disk" {
   source = "../../"
+
+  create_option = "Empty"
   # source             = "Azure/avm-res-compute-disk/azurerm"
   # ...
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.managed_disk.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  zone                = random_integer.zone.result
-
-  enable_telemetry       = var.enable_telemetry # see variables.tf
-  create_option          = "Empty"
+  location               = azurerm_resource_group.this.location
+  name                   = module.naming.managed_disk.name_unique
+  resource_group_name    = azurerm_resource_group.this.name
   storage_account_type   = "Premium_LRS"
-  disk_size_gb           = 1024
+  zone                   = random_integer.zone.result
   disk_encryption_set_id = azurerm_disk_encryption_set.this.id
-
-  network_access_policy = "AllowAll"
+  disk_size_gb           = 1024
+  enable_telemetry       = var.enable_telemetry # see variables.tf
+  network_access_policy  = "AllowAll"
 }
