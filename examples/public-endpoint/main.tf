@@ -35,26 +35,18 @@ data "azurerm_client_config" "current" {}
 # This is the module call
 module "disk" {
   source = "../../"
+
+  create_option = "Empty"
   # source             = "Azure/avm-res-compute-disk/azurerm"
   # ...
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.managed_disk.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  zone                = random_integer.zone.result
-
-  enable_telemetry      = var.enable_telemetry # see variables.tf
-  create_option         = "Empty"
+  location              = azurerm_resource_group.this.location
+  name                  = module.naming.managed_disk.name_unique
+  resource_group_name   = azurerm_resource_group.this.name
   storage_account_type  = "Premium_LRS"
+  zone                  = random_integer.zone.result
   disk_size_gb          = 1024
-  tags                  = local.tags
+  enable_telemetry      = var.enable_telemetry # see variables.tf
   network_access_policy = "AllowAll"
-
-  # Uncomment the code below to implement a VMSS Lock
-  #lock = {
-  #  name = "VMSSNoDelete"
-  #  kind = "CanNotDelete"
-  #}
-
   # Example role assignment
   role_assignments = {
     role_assignment = {
@@ -63,4 +55,5 @@ module "disk" {
       description                = "Assign the Reader role to the deployment user on this disk resource scope."
     }
   }
+  tags = local.tags
 }
