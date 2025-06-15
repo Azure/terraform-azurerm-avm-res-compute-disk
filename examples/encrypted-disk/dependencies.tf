@@ -15,32 +15,14 @@ resource "azurerm_user_assigned_identity" "this" {
 }
 
 module "key_vault" {
-  source                 = "Azure/avm-res-keyvault-vault/azurerm"
-  version                = "0.5.3"
-  tenant_id              = data.azurerm_client_config.current.tenant_id
+  source  = "Azure/avm-res-keyvault-vault/azurerm"
+  version = "0.5.3"
+
+  location               = azurerm_resource_group.this.location
   name                   = module.naming.key_vault.name_unique
   resource_group_name    = azurerm_resource_group.this.name
-  location               = azurerm_resource_group.this.location
+  tenant_id              = data.azurerm_client_config.current.tenant_id
   enabled_for_deployment = true
-  tags                   = local.tags
-
-  network_acls = {
-    default_action = "Allow"
-    bypass         = "AzureServices"
-  }
-
-  # Role recommended in this article: https://learn.microsoft.com/en-us/azure/virtual-machines/disk-encryption#full-control-of-your-keys
-  role_assignments = {
-    key_vault_administrator = {
-      role_definition_id_or_name = "Key Vault Administrator"
-      principal_id               = data.azurerm_client_config.current.object_id
-    }
-    key_vault_crypto_service_encryption_user = {
-      role_definition_id_or_name = "Key Vault Crypto Service Encryption User"
-      principal_id               = azurerm_user_assigned_identity.this.principal_id
-    }
-  }
-
   keys = {
     cmkfordisk = {
       key_opts = [
@@ -58,7 +40,22 @@ module "key_vault" {
       tags         = local.tags
     }
   }
-
+  network_acls = {
+    default_action = "Allow"
+    bypass         = "AzureServices"
+  }
+  # Role recommended in this article: https://learn.microsoft.com/en-us/azure/virtual-machines/disk-encryption#full-control-of-your-keys
+  role_assignments = {
+    key_vault_administrator = {
+      role_definition_id_or_name = "Key Vault Administrator"
+      principal_id               = data.azurerm_client_config.current.object_id
+    }
+    key_vault_crypto_service_encryption_user = {
+      role_definition_id_or_name = "Key Vault Crypto Service Encryption User"
+      principal_id               = azurerm_user_assigned_identity.this.principal_id
+    }
+  }
+  tags = local.tags
   wait_for_rbac_before_secret_operations = {
     create = "120s"
   }
