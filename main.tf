@@ -46,9 +46,9 @@ resource "azapi_resource" "this" {
   name      = var.name
   parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}"
   type      = "Microsoft.Compute/disks@2024-03-02"
-  body = { for k, v in {
-    properties = { for k, v in {
-      creationData = { for k, v in {
+  body = {
+    properties = {
+      creationData = {
         createOption      = var.create_option
         performancePlus   = var.performance_plus_enabled
         logicalSectorSize = var.logical_sector_size
@@ -62,7 +62,7 @@ resource "azapi_resource" "this" {
         galleryImageReference = var.gallery_image_reference_id != null ? {
           id = var.gallery_image_reference_id
         } : null
-      } : k => v if v != null }
+      }
       # Basic disk properties
       diskSizeGB                 = var.disk_size_gb
       osType                     = var.os_type
@@ -106,7 +106,7 @@ resource "azapi_resource" "this" {
           } : null
         }]
       } : null
-    } : k => v if v != null }
+    }
     sku = {
       name = var.storage_account_type
     }
@@ -116,7 +116,7 @@ resource "azapi_resource" "this" {
       name = var.edge_zone
       type = "EdgeZone"
     } : null
-  } : k => v if v != null }
+  }
 }
 
 # State migration block - ensures seamless transition from azurerm_managed_disk to azapi_resource
