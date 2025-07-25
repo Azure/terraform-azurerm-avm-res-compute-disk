@@ -42,9 +42,7 @@ data "azurerm_client_config" "current" {}
 module "disk" {
   source = "../../"
 
-  create_option = "Empty"
-  # source             = "Azure/avm-res-compute-disk/azurerm"
-  # ...
+  create_option         = "Empty"
   location              = azurerm_resource_group.this.location
   name                  = module.naming.managed_disk.name_unique
   resource_group_name   = azurerm_resource_group.this.name
@@ -102,7 +100,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
@@ -111,10 +109,6 @@ The following outputs are exported:
 ### <a name="output_location"></a> [location](#output\_location)
 
 Description: The deployment region.
-
-### <a name="output_resource"></a> [resource](#output\_resource)
-
-Description: This is the full output for the resource.
 
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 

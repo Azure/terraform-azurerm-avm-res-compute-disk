@@ -38,18 +38,18 @@ resource "azurerm_resource_group" "this" {
 module "disk" {
   source = "../../"
 
-  create_option = "Empty"
-  # source             = "Azure/avm-res-compute-disk/azurerm"
-  # ...
-  location               = azurerm_resource_group.this.location
-  name                   = module.naming.managed_disk.name_unique
-  resource_group_name    = azurerm_resource_group.this.name
-  storage_account_type   = "Premium_LRS"
-  zone                   = random_integer.zone.result
-  disk_encryption_set_id = azurerm_disk_encryption_set.this.id
-  disk_size_gb           = 1024
-  enable_telemetry       = var.enable_telemetry # see variables.tf
-  network_access_policy  = "AllowAll"
+  create_option        = "Empty"
+  location             = azurerm_resource_group.this.location
+  name                 = module.naming.managed_disk.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  storage_account_type = "Premium_LRS"
+  zone                 = random_integer.zone.result
+  disk_encryption_set = {
+    id = azurerm_disk_encryption_set.this.id
+  }
+  disk_size_gb          = 1024
+  enable_telemetry      = var.enable_telemetry # see variables.tf
+  network_access_policy = "AllowAll"
 }
 ```
 
@@ -93,7 +93,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
@@ -102,10 +102,6 @@ The following outputs are exported:
 ### <a name="output_location"></a> [location](#output\_location)
 
 Description: The deployment region.
-
-### <a name="output_resource"></a> [resource](#output\_resource)
-
-Description: This is the full output for the resource.
 
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 

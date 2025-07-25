@@ -62,9 +62,7 @@ resource "azurerm_disk_access" "this" {
 module "disk" {
   source = "../../"
 
-  create_option = "Empty"
-  # source             = "Azure/avm-res-compute-disk/azurerm"
-  # ...
+  create_option         = "Empty"
   location              = azurerm_resource_group.this.location
   name                  = module.naming.managed_disk.name_unique
   resource_group_name   = azurerm_resource_group.this.name
