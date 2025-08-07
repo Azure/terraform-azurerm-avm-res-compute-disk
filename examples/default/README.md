@@ -8,7 +8,7 @@ This deploys a disk with a private endpoint.
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/regions/azurerm"
-  version = ">= 0.3.0"
+  version = "0.8.2"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -69,9 +69,7 @@ resource "azurerm_disk_access" "this" {
 module "disk" {
   source = "../../"
 
-  create_option = "Empty"
-  # source             = "Azure/avm-res-compute-disk/azurerm"
-  # ...
+  create_option         = "Empty"
   location              = azurerm_resource_group.this.location
   name                  = module.naming.managed_disk.name_unique
   resource_group_name   = azurerm_resource_group.this.name
@@ -133,7 +131,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
@@ -142,10 +140,6 @@ The following outputs are exported:
 ### <a name="output_location"></a> [location](#output\_location)
 
 Description: The deployment region.
-
-### <a name="output_resource"></a> [resource](#output\_resource)
-
-Description: This is the full output for the resource.
 
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 
@@ -171,7 +165,7 @@ Version: 0.3.0
 
 Source: Azure/regions/azurerm
 
-Version: >= 0.3.0
+Version: 0.8.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
