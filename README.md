@@ -459,7 +459,7 @@ Description: (Optional) Tags of the resource.
 
 Type: `map(string)`
 
-Default: `{}`
+Default: `null`
 
 ### <a name="input_tier"></a> [tier](#input\_tier)
 
