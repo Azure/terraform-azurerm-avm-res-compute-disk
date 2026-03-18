@@ -59,7 +59,15 @@ variable "customer_managed_key" {
       resource_id = string
     }), null)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+A map describing customer-managed keys to associate with the resource. This includes the following properties:
+- `key_vault_resource_id` - The resource ID of the Key Vault where the key is stored.
+- `key_name` - The name of the key.
+- `key_version` - (Optional) The version of the key. If not specified, the latest version is used.
+- `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
+  - `resource_id` - The resource ID of the user-assigned identity.
+DESCRIPTION
 }
 
 variable "disk_access_id" {
@@ -84,7 +92,7 @@ variable "disk_iops_read_only" {
 
 variable "disk_iops_read_write" {
   type        = number
-  default     = 5000
+  default     = null
   description = "(Optional) The number of IOPS allowed for this disk; only settable for UltraSSD disks and PremiumV2 disks. One operation can transfer between 4k and 256k bytes."
 }
 
@@ -96,7 +104,7 @@ variable "disk_mbps_read_only" {
 
 variable "disk_mbps_read_write" {
   type        = number
-  default     = 200
+  default     = null
   description = "(Optional) The bandwidth allowed for this disk; only settable for UltraSSD disks and PremiumV2 disks. MBps means millions of bytes per second."
 }
 
@@ -213,7 +221,7 @@ variable "on_demand_bursting_enabled" {
 
 variable "optimized_frequent_attach_enabled" {
   type        = bool
-  default     = false
+  default     = null
   description = "(Optional) Specifies whether this Managed Disk should be optimized for frequent disk attachments (where a disk is attached/detached more than 5 times in a day). Defaults to `false`."
 }
 
@@ -366,7 +374,7 @@ variable "tags" {
 
 variable "tier" {
   type        = string
-  default     = "P30"
+  default     = null
   description = "(Optional) The disk performance tier to use. Possible values are documented [here](https://docs.microsoft.com/azure/virtual-machines/disks-change-performance). This feature is currently supported only for premium SSDs."
 }
 

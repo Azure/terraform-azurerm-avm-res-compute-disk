@@ -85,7 +85,12 @@ The following input variables are optional (have default values):
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
-Description: required AVM interfaces remove only if not supported by the resource tflint-ignore: terraform\_unused\_declarations
+Description: A map describing customer-managed keys to associate with the resource. This includes the following properties:
+- `key_vault_resource_id` - The resource ID of the Key Vault where the key is stored.
+- `key_name` - The name of the key.
+- `key_version` - (Optional) The version of the key. If not specified, the latest version is used.
+- `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
+  - `resource_id` - The resource ID of the user-assigned identity.
 
 Type:
 
@@ -138,7 +143,7 @@ Description: (Optional) The number of IOPS allowed for this disk; only settable 
 
 Type: `number`
 
-Default: `5000`
+Default: `null`
 
 ### <a name="input_disk_mbps_read_only"></a> [disk\_mbps\_read\_only](#input\_disk\_mbps\_read\_only)
 
@@ -154,7 +159,7 @@ Description: (Optional) The bandwidth allowed for this disk; only settable for U
 
 Type: `number`
 
-Default: `200`
+Default: `null`
 
 ### <a name="input_disk_size_gb"></a> [disk\_size\_gb](#input\_disk\_size\_gb)
 
@@ -294,7 +299,7 @@ Description: (Optional) Specifies whether this Managed Disk should be optimized 
 
 Type: `bool`
 
-Default: `false`
+Default: `null`
 
 ### <a name="input_os_type"></a> [os\_type](#input\_os\_type)
 
@@ -469,7 +474,7 @@ Description: (Optional) The disk performance tier to use. Possible values are do
 
 Type: `string`
 
-Default: `"P30"`
+Default: `null`
 
 ### <a name="input_trusted_launch_enabled"></a> [trusted\_launch\_enabled](#input\_trusted\_launch\_enabled)
 
