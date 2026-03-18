@@ -14,19 +14,19 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.5)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.0)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_managed_disk.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) (resource)
+- [azapi_resource.this](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
 - [azurerm_private_endpoint.this_managed_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
 - [azurerm_private_endpoint.this_unmanaged_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
@@ -35,6 +35,8 @@ The following resources are used by this module:
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
+- [azapi_resource.disk_encryption_set](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource) (data source)
+- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
@@ -114,11 +116,17 @@ Type: `string`
 
 Default: `null`
 
-### <a name="input_disk_encryption_set_id"></a> [disk\_encryption\_set\_id](#input\_disk\_encryption\_set\_id)
+### <a name="input_disk_encryption_set"></a> [disk\_encryption\_set](#input\_disk\_encryption\_set)
 
-Description: (Optional) The ID of a Disk Encryption Set which should be used to encrypt this Managed Disk. Conflicts with `secure_vm_disk_encryption_set_id`.
+Description: (Optional) The disk encryption set configuration. Contains the ID of a Disk Encryption Set which should be used to encrypt this Managed Disk. Conflicts with `secure_vm_disk_encryption_set_id`.
 
-Type: `string`
+Type:
+
+```hcl
+object({
+    id = string
+  })
+```
 
 Default: `null`
 
@@ -415,7 +423,7 @@ Default: `{}`
 
 ### <a name="input_secure_vm_disk_encryption_set_id"></a> [secure\_vm\_disk\_encryption\_set\_id](#input\_secure\_vm\_disk\_encryption\_set\_id)
 
-Description: (Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with `disk_encryption_set_id`. Changing this forces a new resource to be created.
+Description: (Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with `disk_encryption_set`. Changing this forces a new resource to be created.
 
 Type: `string`
 
@@ -496,10 +504,6 @@ Description: The deployment region.
 ### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
 
 Description: A map of the private endpoints created.
-
-### <a name="output_resource"></a> [resource](#output\_resource)
-
-Description: This is the full output for the resource.
 
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 
