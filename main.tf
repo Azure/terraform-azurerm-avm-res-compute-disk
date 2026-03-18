@@ -47,66 +47,68 @@ resource "azapi_resource" "this" {
   parent_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}"
   type      = "Microsoft.Compute/disks@2024-03-02"
   body = {
-    properties = {
-      creationData = {
-        createOption      = var.create_option
-        performancePlus   = var.performance_plus_enabled
-        logicalSectorSize = var.logical_sector_size
-        sourceResourceId  = var.source_resource_id
-        sourceUri         = var.source_uri
-        storageAccountId  = var.storage_account_id
-        uploadSizeBytes   = var.upload_size_bytes
-        imageReference = var.image_reference_id != null ? {
-          id = var.image_reference_id
-        } : null
-        galleryImageReference = var.gallery_image_reference_id != null ? {
-          id = var.gallery_image_reference_id
-        } : null
-      }
-      # Basic disk properties
-      diskSizeGB                 = var.disk_size_gb
-      osType                     = var.os_type
-      hyperVGeneration           = var.hyper_v_generation
-      tier                       = var.tier
-      maxShares                  = var.max_shares
-      diskIOPSReadWrite          = var.disk_iops_read_write
-      diskMBpsReadWrite          = var.disk_mbps_read_write
-      diskIOPSReadOnly           = var.disk_iops_read_only
-      diskMBpsReadOnly           = var.disk_mbps_read_only
-      burstingEnabled            = var.on_demand_bursting_enabled
-      optimizedForFrequentAttach = var.optimized_frequent_attach_enabled
-      networkAccessPolicy        = var.network_access_policy
-      publicNetworkAccess        = var.public_network_access_enabled == false ? "Disabled" : "Enabled"
-      diskAccessId               = local.disk_access_id
-      encryption = var.disk_encryption_set != null ? {
-        type                = local.disk_encryption_type
-        diskEncryptionSetId = local.disk_encryption_set_id
-        } : {
-        type = "EncryptionAtRestWithPlatformKey"
-      }
-      # Security profile
-      securityProfile = (var.security_type != null || var.trusted_launch_enabled == true) ? {
-        securityType                = var.trusted_launch_enabled == true ? "TrustedLaunch" : var.security_type
-        secureVMDiskEncryptionSetId = var.secure_vm_disk_encryption_set_id
-      } : null
-      encryptionSettingsCollection = var.encryption_settings != null ? {
-        enabled = true
-        encryptionSettings = [{
-          diskEncryptionKey = try(var.encryption_settings.disk_encryption_key, null) != null ? {
-            secretUrl = try(var.encryption_settings.disk_encryption_key.secret_url, null)
-            sourceVault = {
-              id = try(var.encryption_settings.disk_encryption_key.source_vault_id, null)
-            }
+    properties = merge(
+      {
+        creationData = {
+          createOption      = var.create_option
+          performancePlus   = var.performance_plus_enabled
+          logicalSectorSize = var.logical_sector_size
+          sourceResourceId  = var.source_resource_id
+          sourceUri         = var.source_uri
+          storageAccountId  = var.storage_account_id
+          uploadSizeBytes   = var.upload_size_bytes
+          imageReference = var.image_reference_id != null ? {
+            id = var.image_reference_id
           } : null
-          keyEncryptionKey = try(var.encryption_settings.key_encryption_key, null) != null ? {
-            keyUrl = try(var.encryption_settings.key_encryption_key.key_url, null)
-            sourceVault = {
-              id = try(var.encryption_settings.key_encryption_key.source_vault_id, null)
-            }
+          galleryImageReference = var.gallery_image_reference_id != null ? {
+            id = var.gallery_image_reference_id
           } : null
-        }]
-      } : null
-    }
+        }
+        # Basic disk properties
+        diskSizeGB                 = var.disk_size_gb
+        osType                     = var.os_type
+        hyperVGeneration           = var.hyper_v_generation
+        maxShares                  = var.max_shares
+        diskIOPSReadOnly           = var.disk_iops_read_only
+        diskMBpsReadOnly           = var.disk_mbps_read_only
+        burstingEnabled            = var.on_demand_bursting_enabled
+        optimizedForFrequentAttach = var.optimized_frequent_attach_enabled
+        networkAccessPolicy        = var.network_access_policy
+        publicNetworkAccess        = var.public_network_access_enabled == false ? "Disabled" : "Enabled"
+        diskAccessId               = local.disk_access_id
+        encryption = var.disk_encryption_set != null ? {
+          type                = local.disk_encryption_type
+          diskEncryptionSetId = local.disk_encryption_set_id
+          } : {
+          type = "EncryptionAtRestWithPlatformKey"
+        }
+        # Security profile
+        securityProfile = (var.security_type != null || var.trusted_launch_enabled == true) ? {
+          securityType                = var.trusted_launch_enabled == true ? "TrustedLaunch" : var.security_type
+          secureVMDiskEncryptionSetId = var.secure_vm_disk_encryption_set_id
+        } : null
+        encryptionSettingsCollection = var.encryption_settings != null ? {
+          enabled = true
+          encryptionSettings = [{
+            diskEncryptionKey = try(var.encryption_settings.disk_encryption_key, null) != null ? {
+              secretUrl = try(var.encryption_settings.disk_encryption_key.secret_url, null)
+              sourceVault = {
+                id = try(var.encryption_settings.disk_encryption_key.source_vault_id, null)
+              }
+            } : null
+            keyEncryptionKey = try(var.encryption_settings.key_encryption_key, null) != null ? {
+              keyUrl = try(var.encryption_settings.key_encryption_key.key_url, null)
+              sourceVault = {
+                id = try(var.encryption_settings.key_encryption_key.source_vault_id, null)
+              }
+            } : null
+          }]
+        } : null
+      },
+      var.tier != null ? { tier = var.tier } : {},
+      var.disk_iops_read_write != null ? { diskIOPSReadWrite = var.disk_iops_read_write } : {},
+      var.disk_mbps_read_write != null ? { diskMBpsReadWrite = var.disk_mbps_read_write } : {},
+    )
     sku = {
       name = var.storage_account_type
     }
