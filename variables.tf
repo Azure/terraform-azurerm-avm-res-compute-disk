@@ -67,7 +67,7 @@ A map describing customer-managed keys to associate with the resource. This incl
 - `key_version` - (Optional) The version of the key. If not specified, the latest version is used.
 - `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
   - `resource_id` - The resource ID of the user-assigned identity.
-DESCRIPTION  
+DESCRIPTION
 }
 
 variable "disk_access_id" {
@@ -76,10 +76,12 @@ variable "disk_access_id" {
   description = "(Optional) The ID of the disk access resource for using private endpoints on disks."
 }
 
-variable "disk_encryption_set_id" {
-  type        = string
+variable "disk_encryption_set" {
+  type = object({
+    id = string
+  })
   default     = null
-  description = "(Optional) The ID of a Disk Encryption Set which should be used to encrypt this Managed Disk. Conflicts with `secure_vm_disk_encryption_set_id`."
+  description = "(Optional) The disk encryption set configuration. Contains the ID of a Disk Encryption Set which should be used to encrypt this Managed Disk. Conflicts with `secure_vm_disk_encryption_set_id`."
 }
 
 variable "disk_iops_read_only" {
@@ -143,7 +145,7 @@ variable "encryption_settings" {
   })
   default     = null
   description = <<-EOT
- - `enabled` - 
+ - `enabled` -
 
  ---
  `disk_encryption_key` block supports the following:
@@ -337,7 +339,7 @@ DESCRIPTION
 variable "secure_vm_disk_encryption_set_id" {
   type        = string
   default     = null
-  description = "(Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with `disk_encryption_set_id`. Changing this forces a new resource to be created."
+  description = "(Optional) The ID of the Disk Encryption Set which should be used to Encrypt this OS Disk when the Virtual Machine is a Confidential VM. Conflicts with `disk_encryption_set`. Changing this forces a new resource to be created."
 }
 
 variable "security_type" {

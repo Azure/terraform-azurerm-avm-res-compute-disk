@@ -27,7 +27,7 @@ resource "random_integer" "zone" {
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.3"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
@@ -43,9 +43,7 @@ data "azurerm_client_config" "current" {}
 module "disk" {
   source = "../../"
 
-  create_option = "Empty"
-  # source             = "Azure/avm-res-compute-disk/azurerm"
-  # ...
+  create_option         = "Empty"
   location              = azurerm_resource_group.this.location
   name                  = module.naming.managed_disk.name_unique
   resource_group_name   = azurerm_resource_group.this.name
@@ -75,7 +73,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.0)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6.2)
 
 ## Resources
 
@@ -103,7 +101,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
@@ -112,10 +110,6 @@ The following outputs are exported:
 ### <a name="output_location"></a> [location](#output\_location)
 
 Description: The deployment region.
-
-### <a name="output_resource"></a> [resource](#output\_resource)
-
-Description: This is the full output for the resource.
 
 ### <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name)
 
@@ -135,7 +129,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: 0.4.3
+Version: 0.3.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
