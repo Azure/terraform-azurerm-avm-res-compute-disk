@@ -51,7 +51,7 @@ resource "azurerm_managed_disk" "this" {
   source_resource_id                = var.source_resource_id
   source_uri                        = var.source_uri
   storage_account_id                = var.storage_account_id
-  tags                              = var.tags == null ? {} : var.tags
+  tags                              = var.tags
   tier                              = var.tier
   trusted_launch_enabled            = var.trusted_launch_enabled
   upload_size_bytes                 = var.upload_size_bytes

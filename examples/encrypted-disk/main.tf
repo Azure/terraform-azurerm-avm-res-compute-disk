@@ -44,4 +44,5 @@ module "disk" {
   disk_size_gb           = 1024
   enable_telemetry       = var.enable_telemetry # see variables.tf
   network_access_policy  = "AllowAll"
+  tags                   = local.tags
 }
