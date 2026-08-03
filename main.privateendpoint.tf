@@ -15,6 +15,7 @@ resource "azurerm_private_endpoint" "this_managed_dns_zone_groups" {
     private_connection_resource_id = var.disk_access_id
     subresource_names              = ["disks"] # map to each.value.subresource_name if there are multiple services.
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
@@ -25,6 +26,7 @@ resource "azurerm_private_endpoint" "this_managed_dns_zone_groups" {
       subresource_name   = "disks" # map to each.value.subresource_name if there are multiple services.
     }
   }
+
   dynamic "private_dns_zone_group" {
     for_each = length(each.value.private_dns_zone_resource_ids) > 0 ? ["this"] : []
 
@@ -52,6 +54,7 @@ resource "azurerm_private_endpoint" "this_unmanaged_dns_zone_groups" {
     private_connection_resource_id = var.disk_access_id
     subresource_names              = ["disks"] # map to each.value.subresource_name if there are multiple services.
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
@@ -74,4 +77,3 @@ resource "azurerm_private_endpoint_application_security_group_association" "this
   application_security_group_id = each.value.asg_resource_id
   private_endpoint_id           = azurerm_private_endpoint.this_managed_dns_zone_groups[each.value.pe_key].id
 }
-
