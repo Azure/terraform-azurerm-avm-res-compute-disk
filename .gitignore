@@ -50,3 +50,7 @@ avm.tflint_module.merged.hcl
 examples/*/policy
 *.mptfbackup
 .avm
+.copilot-prompt.txt
+.run-copilot.ps1
+stderr.log
+stdout.log
