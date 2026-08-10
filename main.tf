@@ -80,4 +80,3 @@ resource "azurerm_managed_disk" "this" {
     }
   }
 }
-
