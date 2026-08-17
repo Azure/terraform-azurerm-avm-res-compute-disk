@@ -16,7 +16,7 @@ resource "azurerm_user_assigned_identity" "this" {
 
 module "key_vault" {
   source  = "Azure/avm-res-keyvault-vault/azurerm"
-  version = "0.5.3"
+  version = "0.10.2"
 
   location               = azurerm_resource_group.this.location
   name                   = module.naming.key_vault.name_unique
