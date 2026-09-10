@@ -26,7 +26,7 @@ resource "random_integer" "zone" {
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.3.0"
+  version = "0.4.3"
 }
 
 # This is required for resource modules
@@ -100,7 +100,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.0)
 
@@ -165,7 +165,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: 0.3.0
+Version: 0.4.3
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
