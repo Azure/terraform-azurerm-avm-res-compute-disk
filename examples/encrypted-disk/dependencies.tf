@@ -22,6 +22,7 @@ module "key_vault" {
   name                   = module.naming.key_vault.name_unique
   resource_group_name    = azurerm_resource_group.this.name
   tenant_id              = data.azurerm_client_config.current.tenant_id
+  enable_telemetry       = var.enable_telemetry
   enabled_for_deployment = true
   keys = {
     cmkfordisk = {
