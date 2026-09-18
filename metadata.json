@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Compute Disk",
+  "moduleDescription": "AVM Resource Module for Compute Disk",
+  "canonicalType": "Microsoft.Compute/disks",
+  "owners": [
+    "terrymandin"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.res.85a8d35"
+}
