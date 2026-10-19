@@ -127,7 +127,7 @@ Version:
 
 Source: Azure/avm-res-keyvault-vault/azurerm
 
-Version: 0.5.3
+Version: 0.12.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
